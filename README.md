@@ -1,36 +1,47 @@
 # FreelanceJury
 
-AI-powered freelancer vs client dispute resolution. An AI arbitrator reads the agreement, fetches the deliverable, weighs both sides, and issues a binding verdict.
+Decentralized freelance dispute resolution. AI validators read the agreement, fetch the deliverable, and rule by consensus.
+
+## Why This Exists
+
+Freelance disputes are expensive and slow. Platforms take 20% and still can't fairly resolve "the work wasn't what I asked for." FreelanceJury puts dispute resolution on-chain — AI validators read the original agreement, fetch the actual deliverable, and rule on whether the work meets the terms.
+
+## Why GenLayer
+
+- **Fetches real deliverables** — Validators don't just read claims. They fetch the actual work product (live URLs, documents, repos) and inspect it against the agreement.
+- **Reads and interprets agreements** — "Build a responsive landing page" means something specific. AI validators understand scope, quality expectations, and deliverable completeness.
+- **Weighs competing narratives** — Both parties tell their story. Validators assess credibility, evidence, and whether the work objectively meets the stated requirements.
+- **Judgment, not computation** — "Is this website complete?" cannot be answered by a deterministic VM. It requires looking at the site, checking functionality, and comparing against specs.
+- **Escrow integration** — Ruling triggers automatic fund release or refund. No human arbitrator needed, no weeks of back-and-forth.
 
 ## Structure
 
-- **judiciary/** — GenLayer intelligent contract that acts as the AI judge
-- **escrow/** — Solidity escrow contract (Foundry) that splits funds based on ruling
-- **portal/** — Vanilla HTML + htmx frontend for submitting disputes
-
-## How It Works
-
-1. Client deposits funds into `DisputeEscrow.sol`
-2. Either party opens a case via `FreelanceJury` GenLayer contract
-3. AI reads the agreement, fetches the deliverable URL, and evaluates both arguments
-4. Verdict is returned: `client`, `freelancer`, or `split` with a percentage
-5. Resolver calls `DisputeEscrow.resolve()` to distribute funds accordingly
-
-## Verdict Format
-
-```json
-{"ruling": "client|freelancer|split", "client_pct": 0-100, "reasoning": "..."}
+```
+FreelanceJury/
+├── judiciary/      # GenLayer contract — dispute resolution logic
+├── escrow/         # Foundry Solidity — fund escrow + release
+├── portal/         # Vanilla HTML + htmx — dispute filing UI
+└── README.md
 ```
 
-## Deploy
+## Test Results
 
-```bash
-genlayer deploy --contract judiciary/freelance_jury.py
+```
+Input:  Agreement: "Deliver a working portfolio site with 5 pages"
+        Deliverable URL: [fetched by validators]
+Result: RULING — Client wins (100% refund)
+        Reason: Deliverable had broken links, only 3 pages, incomplete styling
 ```
 
-## Test
+## Deployment
+
+- **Network:** GenLayer Testnet
+- **Contract:** `0xd8933a6440530a871f93110bF35102db37528787`
+
+## Quick Start
 
 ```bash
-genlayer call --method open_case \
-  --args '{"agreement":"Build a 5-page responsive website per provided mockups","deliverable_url":"https://example.com/project","client_complaint":"Design looks nothing like mockups, ugly and unresponsive","freelancer_defense":"Followed mockups closely, client changed requirements mid-project without updating agreement"}'
+cd portal && open index.html
+# File a dispute: paste agreement + deliverable URL
+# Validators fetch, inspect, and rule
 ```
