@@ -1,29 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FreelanceJury</title>
-  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 700px; margin: 2rem auto; padding: 0 1rem; }
-    h1 { color: #1a1a2e; }
-    form { display: flex; flex-direction: column; gap: 0.75rem; }
-    textarea, input { padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-    button { padding: 0.75rem; background: #1a1a2e; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-    #result { margin-top: 1rem; padding: 1rem; background: #f4f4f4; border-radius: 4px; white-space: pre-wrap; }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <h1>⚖️ FreelanceJury</h1>
-  <p>AI-powered freelancer vs client dispute resolution</p>
-  <form hx-post="/api/open_case" hx-target="#result" hx-swap="innerHTML">
-    <textarea name="agreement" rows="3" placeholder="Paste the agreement/contract terms" required></textarea>
-    <input name="deliverable_url" type="url" placeholder="Deliverable URL" required>
-    <textarea name="client_complaint" rows="2" placeholder="Client's complaint" required></textarea>
-    <textarea name="freelancer_defense" rows="2" placeholder="Freelancer's defense" required></textarea>
-    <button type="submit">Submit Dispute</button>
-  </form>
-  <div id="result"></div>
+<body class="bg-gray-950 text-white min-h-screen">
+  <nav class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-2"><span class="text-2xl">🤝</span><h1 class="text-xl font-bold">FreelanceJury</h1></div>
+    <span class="text-xs bg-blue-900/50 text-blue-400 px-3 py-1 rounded-full">1 case resolved</span>
+  </nav>
+  <main class="max-w-3xl mx-auto p-6 space-y-6">
+    <!-- Open Case -->
+    <section class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+      <h2 class="text-blue-400 font-semibold mb-4">Open Dispute Case</h2>
+      <textarea placeholder="Agreement terms (what was promised)" rows="2" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 mb-3 placeholder-gray-600 outline-none resize-none"></textarea>
+      <input placeholder="Deliverable URL (GitHub, Figma, etc)" class="w-full bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 mb-3 placeholder-gray-600 outline-none">
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <textarea placeholder="Client complaint..." rows="2" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 placeholder-gray-600 outline-none resize-none"></textarea>
+        <textarea placeholder="Freelancer defense..." rows="2" class="bg-gray-950 border border-gray-700 rounded-xl px-4 py-3 placeholder-gray-600 outline-none resize-none"></textarea>
+      </div>
+      <button class="w-full bg-blue-600 hover:bg-blue-500 rounded-xl py-3 font-bold transition">⚖️ Submit for Arbitration</button>
+    </section>
+
+    <!-- Case Result -->
+    <section class="bg-gray-900 rounded-2xl p-6 border border-gray-800">
+      <h2 class="font-semibold mb-3">Case #0 — Landing Page Dispute</h2>
+      <div class="flex items-center gap-4 mb-4">
+        <div class="flex-1 bg-gray-800 rounded-full h-3"><div class="bg-red-500 h-3 rounded-full" style="width:100%"></div></div>
+        <span class="text-red-400 font-bold text-sm">100% → Client</span>
+      </div>
+      <div class="grid grid-cols-2 gap-4 text-sm">
+        <div class="bg-red-950/30 border border-red-900/50 rounded-lg p-3">
+          <p class="text-red-400 font-semibold text-xs mb-1">CLIENT WINS</p>
+          <p class="text-gray-400 text-xs">Full refund — deliverable had broken links and incomplete CSS</p>
+        </div>
+        <div class="bg-gray-800 rounded-lg p-3">
+          <p class="text-gray-500 font-semibold text-xs mb-1">FREELANCER</p>
+          <p class="text-gray-500 text-xs">Defense rejected — scope changes not documented</p>
+        </div>
+      </div>
+    </section>
+  </main>
 </body>
 </html>
