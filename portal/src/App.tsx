@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Toaster, toast } from 'sonner'
+import { connectWallet, isWalletConnected } from './genlayer'
 
 const CONTRACT = '0xd8933a6440530a871f93110bF35102db37528787'
 
@@ -24,6 +25,17 @@ export default function App() {
   )
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [deliberating, setDeliberating] = useState(false)
+  const [wallet, setWallet] = useState<string | null>(null)
+
+  async function handleConnect() {
+    try {
+      const addr = await connectWallet()
+      setWallet(addr)
+      toast.success('Wallet connected', { description: `${addr.slice(0, 6)}…${addr.slice(-4)}` })
+    } catch (e: any) {
+      toast.error('Wallet connection failed', { description: e?.message ?? String(e) })
+    }
+  }
 
   const wordBalance = useMemo(() => {
     const c = claimant.trim().split(/\s+/).filter(Boolean).length
@@ -70,6 +82,16 @@ export default function App() {
       <div className="mx-auto max-w-3xl bg-[#f7f3e8] shadow-[0_0_60px_rgba(0,0,0,0.6)]" style={{ backgroundImage: 'linear-gradient(rgba(184,134,11,0.04) 1px, transparent 1px)', backgroundSize: '100% 28px' }}>
         {/* Letterhead */}
         <header className="relative border-b-4 border-double border-[#B8860B] px-10 pt-8 pb-5 text-center">
+          <button
+            onClick={handleConnect}
+            className={`absolute left-8 top-6 rounded-sm border-2 px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition ${
+              (wallet ?? isWalletConnected())
+                ? 'border-[#131A2E] bg-[#131A2E] text-[#B8860B]'
+                : 'border-[#B8860B] bg-[#B8860B]/10 text-[#B8860B] hover:bg-[#B8860B]/20'
+            }`}
+          >
+            {wallet ? `${wallet.slice(0, 6)}…${wallet.slice(-4)}` : 'Connect Wallet'}
+          </button>
           <div className="absolute right-8 top-6 rotate-[8deg] rounded-full border-2 border-[#B8860B]/60 px-3 py-2 text-[9px] font-bold uppercase tracking-widest text-[#B8860B]/70">
             On-Chain<br />Escrow
           </div>
