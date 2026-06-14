@@ -16,12 +16,6 @@ Freelance disputes are judgment problems:
 
 **GenLayer (Bradbury):** `0xd8933a6440530a871f93110bF35102db37528787`
 
-## Test result
-
-Agreement: "Build landing page for 500 USD in 7 days"
-Deliverable: GitHub repo with broken CSS links
-→ **Ruling: client (100% refund)** — "deliverable had broken links and was incomplete"
-
 ## Structure
 
 ```
