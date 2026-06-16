@@ -4,8 +4,8 @@
 
 FreelanceJury settles "did the freelancer deliver what was promised?" without a human arbitrator, an escrow agent, or a trusted backend. The contract takes the agreement, the client's complaint, and the freelancer's defense, then a network of validators independently fetches the deliverable from its URL and judges the dispute against the agreement terms. The verdict — `client`, `freelancer`, or `split` with a precise refund percentage — is the value the network agrees on, stored permanently on chain.
 
-- **Contract (Bradbury, chain 4221):** `0xd8933a6440530a871f93110bF35102db37528787`
-- **Explorer:** https://explorer-bradbury.genlayer.com/contract/0xd8933a6440530a871f93110bF35102db37528787
+- **Contract (Bradbury, chain 4221):** `0x7ff7211efb43532BA8d6335a96A058307F79A665`
+- **Explorer:** https://explorer-bradbury.genlayer.com/contract/0x7ff7211efb43532BA8d6335a96A058307F79A665
 - **Live app:** https://freelancejury.pages.dev
 
 ## What it does
