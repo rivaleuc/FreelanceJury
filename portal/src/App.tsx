@@ -1,9 +1,7 @@
 import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Toaster, toast } from 'sonner'
-import { connectWallet, isWalletConnected } from './genlayer'
-
-const CONTRACT = '0xd8933a6440530a871f93110bF35102db37528787'
+import { connectWallet, isWalletConnected, read, write, CONTRACT } from './genlayer'
 
 type Verdict = {
   ruling: 'FOR CLAIMANT' | 'FOR RESPONDENT' | 'SPLIT AWARD'
@@ -43,35 +41,35 @@ export default function App() {
     return { c, r }
   }, [claimant, respondent])
 
-  function deliberate() {
+  async function deliberate() {
     if (!agreement.trim() || !claimant.trim() || !respondent.trim()) {
       toast.error('All sections of the case file must be completed before ruling.')
       return
     }
     setDeliberating(true)
     setVerdict(null)
-    toast('The jury is deliberating…', { icon: '⚖️' })
+    toast('Opening case on-chain — validators deliberating…', { icon: '⚖️' })
 
-    setTimeout(() => {
-      // Deterministic-ish heuristic blend for a believable split
-      const seed = (agreement.length * 7 + claimant.length * 3 + respondent.length * 5) % 100
-      const claimantPct = Math.max(15, Math.min(85, 40 + ((seed % 50) - 25)))
-      let ruling: Verdict['ruling'] = 'SPLIT AWARD'
-      if (claimantPct >= 70) ruling = 'FOR CLAIMANT'
-      else if (claimantPct <= 30) ruling = 'FOR RESPONDENT'
-
-      const caseNo = `FJ-${new Date().getFullYear()}-${String(1000 + (seed % 9000)).padStart(4, '0')}`
-      const rationale =
-        ruling === 'FOR CLAIMANT'
-          ? 'The panel finds the deliverable materially failed the agreed acceptance criteria. The burden of deployment rested with the respondent. Escrow is awarded predominantly to the claimant.'
-          : ruling === 'FOR RESPONDENT'
-            ? 'The panel finds the respondent substantially performed. Documented mid-project scope changes by the claimant shift responsibility. Escrow is released predominantly to the respondent.'
-            : 'The panel finds fault on both sides: the deliverable fell short on performance, yet the claimant withheld credentials needed for production deployment. Escrow is divided proportionally.'
-
-      setVerdict({ ruling, claimantPct, rationale, caseNo })
+    try {
+      // 1) Real write: open the case (AI jury reads agreement + fetches deliverable + weighs both sides)
+      await write('open_case', [agreement.trim(), deliverable.trim(), claimant.trim(), respondent.trim()])
+      // 2) Find the new case key
+      const stats: any = await read('stats')
+      const key = String(Number(stats.total_cases) - 1)
+      // 3) Read the real verdict
+      const c: any = await read('get_case', [key])
+      const raw = String(c.ruling || 'split').toLowerCase()
+      const ruling: Verdict['ruling'] =
+        raw === 'client' ? 'FOR CLAIMANT' : raw === 'freelancer' ? 'FOR RESPONDENT' : 'SPLIT AWARD'
+      const claimantPct = Math.max(0, Math.min(100, Number(c.client_pct ?? 50)))
+      const caseNo = `FJ-${new Date().getFullYear()}-${String(key).padStart(4, '0')}`
+      setVerdict({ ruling, claimantPct, rationale: String(c.reasoning || ''), caseNo })
       setDeliberating(false)
-      toast.success(`Verdict entered · ${caseNo}`)
-    }, 1400)
+      toast.success(`Verdict recorded on-chain · ${caseNo}`)
+    } catch (e: any) {
+      setDeliberating(false)
+      toast.error('Arbitration failed', { description: e?.message?.slice(0, 120) ?? String(e) })
+    }
   }
 
   return (
